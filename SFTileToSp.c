@@ -1,0 +1,106 @@
+/*
+ * SF3KLib: Convert 'Star Fighter 3000' map tiles to RISC OS sprites
+ * Copyright (C) 2009 Christopher Bazley
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/* History:
+  CJB: 21-Aug-09: Created this source file.
+  CJB: 04-Oct-09: Replaced macro values with enumerated constants. Updated
+                  to use new SpriteAreaHeader and SpriteHeader type names.
+  CJB: 26-Jun-10: Updated to use new SF3000 type and constant names.
+  CJB: 17-Jan-11: Moved sprite creation code to sf_tiles_to_lone_spr.
+  CJB: 18-Apr-15: Assertions are now provided by debug.h.
+  CJB: 09-Apr-16: Added a cast and explicitly ignored the return value of
+                  sf_tiles_to_lone_spr to avoid GNU C compiler warnings.
+  CJB: 21-Apr-16: Substituted format specifier %zu for %lu to avoid the need
+                  to cast the matching parameter.
+  CJB: 28-Apr-16: Now calls sf_tiles_to_lone_spr to get the expected sprite
+                  size instead of using an independent numeric constant.
+  CJB: 11-Nov-18: Fixed broken #include.
+*/
+
+/* ISO library headers */
+#include <stddef.h>
+#include <stdbool.h>
+
+/* CBOSLib headers */
+#include "SprFormats.h"
+
+/* Local headers */
+#include "Internal/SF3KMisc.h"
+#include "SFFormats.h"
+#include "SpriteArea.h"
+#include "SFSprConv.h"
+
+size_t sf_tiles_to_spr(SpriteAreaHeader    *sprite_area,
+                       const SFMapTileSet  *tiles,
+                       unsigned int         start,
+                       unsigned int         end,
+                       const char          *sprite_name,
+                       bool                 new_format,
+                       SFBitmapsProgressFn *prog_cb,
+                       const void          *prog_arg)
+{
+  size_t output_size = 0;
+  const size_t sprite_size = sf_tiles_to_lone_spr(
+    NULL, 0, tiles, 0, sprite_name, new_format);
+
+  assert(tiles != NULL);
+  assert(start <= end);
+
+  /* Ensure we do not read from beyond the end of the tiles set */
+  if (tiles->last_tile_num < 0)
+    end = 0;
+  if (end > (unsigned int)tiles->last_tile_num + 1)
+    end = tiles->last_tile_num + 1;
+
+  if (sprite_area != NULL)
+  {
+    for (unsigned int tile = start; tile < end; tile++)
+    {
+      /* Call the progress function before processing every bitmap,
+         if supplied */
+      if (prog_cb != NULL)
+      {
+        if (!prog_cb(prog_arg, tile))
+        {
+          DEBUGF("Conversion aborted by progress callback\n");
+          break;
+        }
+      }
+
+      /* Allocate space for a new sprite in the output sprite area */
+      SpriteHeader * const sph = spritearea_alloc_spr(sprite_area, sprite_size);
+      if (sph == NULL)
+      {
+        DEBUGF("Ran out of space during conversion\n");
+        break; /* not enough free space */
+      }
+
+      /* Convert tile bitmap to sprite */
+      size_t req_size = sf_tiles_to_lone_spr(
+        sph, sprite_size, tiles, tile, sprite_name, new_format);
+
+      assert(req_size == sprite_size);
+      NOT_USED(req_size);
+    } /* loop back (next image) */
+  }
+
+  output_size = (end - start) * sprite_size;
+  DEBUGF("Required free space is %zu\n", output_size);
+  return output_size;
+}

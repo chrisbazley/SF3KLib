@@ -1,0 +1,5 @@
+# Project:   SF3KLib
+LibName = SF3K
+ObjectList = SFPlanToSp SFPlanToLS SFSpToPlan SFSkyToSp SFSkyToLS \
+             SFSpToSky SFTileToSp SFTileToLS SFSpToTile \
+             SpriteArea SprHas8bpp
