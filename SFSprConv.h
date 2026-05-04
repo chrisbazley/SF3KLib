@@ -123,7 +123,7 @@ extern size_t sf_spr_to_tiles(SFMapTileSet           */*tiles*/,
     * tiles == NULL to find the required size of the output buffer. May be
     * called with start == 0 and end == UINT_MAX to process all sprites. If a
     * progress callback function is specified then it will be called before
-    * processing each sprite. Only correctly-named sprites with appropriate
+    * processing each sprite. Only correctly-named sprites with appropriate
     * dimensions and colour depth etc. will be converted; others will be
     * flagged up via the second callback function (if specified). If the
     * returned size exceeds the output buffer size then some suitable sprites
@@ -197,7 +197,7 @@ extern size_t sf_spr_to_planets(SFPlanetsHeader        */*planets*/,
     * bitmaps within the output buffer (it depends on the order of the source
     * sprites). May be called with start == 0 and end == UINT_MAX to process
     * all sprites. If a progress callback function is specified then it will be
-    * called before processing each sprite. Only correctly-named sprites with
+    * called before processing each sprite. Only correctly-named sprites with
     * appropriate dimensions and colour depth etc. will be converted; others
     * will be flagged up via the second callback function (if specified). If
     * the returned size exceeds the output buffer size then some suitable
