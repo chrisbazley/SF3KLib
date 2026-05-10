@@ -112,8 +112,8 @@ size_t sf_spr_to_sky(SFSky                  *sky,
         if (output_size <= sky_size)
         {
           /* Calculate address of start of sprite bitmap */
-          const const char * const sprite_bitmap = (char *)sph + sph->image;
-          DEBUGF("Source bitmap is at %p\n", sprite_bitmap);
+          const char * const sprite_bitmap = (char *)sph + sph->image;
+          DEBUGF("Source bitmap is at %p\n", (void *)sprite_bitmap);
 
           /* Copy sprite's bitmap as the sky pixel data, one row at a time
              (same pixel format etc) */
