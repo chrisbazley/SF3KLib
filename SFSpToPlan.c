@@ -164,11 +164,11 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
           planets->data_offsets[image_num].image_B = mem_used;
           mem_used += sizeof(SFPlanetBitmap);
           image_B = (char *)planets + planets->data_offsets[image_num].image_B;
-          DEBUGF("Non-aligned bitmap will be written at %p\n", image_B);
+          DEBUGF("Non-aligned bitmap will be written at %p\n", (void *)image_B);
 
           /* Calculate address of start of sprite bitmap */
           sprite_bitmap = (char *)sph + sph->image;
-          DEBUGF("Source bitmap is at %p\n", sprite_bitmap);
+          DEBUGF("Source bitmap is at %p\n", (void *)sprite_bitmap);
 
           /* We make two copies of the input sprite; one word-aligned and the
              other half-word aligned. This requires copying one row at a time.
