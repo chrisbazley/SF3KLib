@@ -133,7 +133,7 @@ size_t sf_spr_to_tiles(SFMapTileSet           *tiles,
 
           /* Calculate address of start of sprite bitmap */
           const char * const sprite_bitmap = (char *)sph + sph->image;
-          DEBUGF("Source bitmap is at %p\n", sprite_bitmap);
+          DEBUGF("Source bitmap is at %p\n", (void *)sprite_bitmap);
 
           /* Copy sprite's bitmap as the new map tile, one row at a time
              (same pixel format etc) */
