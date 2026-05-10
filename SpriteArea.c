@@ -87,7 +87,7 @@ void *spritearea_alloc_ext(SpriteAreaHeader *sprite_area, size_t size)
       if (area_used > area_first)
       {
         DEBUGF("Moving %d bytes of sprite data from %p to %p\n",
-              area_used - area_first, ext_data, ext_data + size);
+              area_used - area_first, (void *)ext_data, (void *)ext_data + size);
 
         memmove(ext_data + size, ext_data, area_used - area_first);
       }
@@ -111,7 +111,7 @@ void *spritearea_alloc_ext(SpriteAreaHeader *sprite_area, size_t size)
           area_used);
   }
 
-  DEBUGF("Returning extension data pointer %p\n", ext_data);
+  DEBUGF("Returning extension data pointer %p\n", (void *)ext_data);
   return ext_data;
 }
 
