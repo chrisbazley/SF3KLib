@@ -32,6 +32,7 @@
                   upper bound on the number of images to convert.
   CJB: 21-Nov-20: Pass the actual sprite name to the query callback instead
                   of the expected name prefix.
+  CJB: 11-May-26: Fix type mismatch with format specifier %p.
 */
 
 /* ISO library headers */
@@ -159,7 +160,7 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
           planets->data_offsets[image_num].image_A = mem_used;
           mem_used += sizeof(SFPlanetBitmap);
           image_A = (char *)planets + planets->data_offsets[image_num].image_A;
-          DEBUGF("Aligned bitmap will be written at %p\n", image_A);
+          DEBUGF("Aligned bitmap will be written at %p\n", (void *)image_A);
 
           planets->data_offsets[image_num].image_B = mem_used;
           mem_used += sizeof(SFPlanetBitmap);
