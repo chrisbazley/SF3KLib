@@ -93,11 +93,11 @@ void *spritearea_alloc_ext(SpriteAreaHeader *sprite_area, size_t size)
                area_used - area_first, (void *)ext_data,
                (void *)(ext_data + size));
 
-        memmove(ext_data + size, ext_data, area_used - area_first);
+        memmove(ext_data + size, ext_data, (size_t)(area_used - area_first));
       }
 
-      sprite_area->used = area_used + size;
-      sprite_area->first = area_first + size;
+      sprite_area->used = area_used + (int)size;
+      sprite_area->first = area_first + (int)size;
 
       assert(sprite_area->size >= sprite_area->used);
       assert(sprite_area->used >= sprite_area->first);
@@ -151,7 +151,7 @@ SpriteHeader *spritearea_alloc_spr(SpriteAreaHeader *sprite_area, size_t size)
       sph->size = size;
 
       sprite_area->sprite_count++;
-      sprite_area->used = area_used + size;
+      sprite_area->used = area_used + (int)size;
 
       assert(sprite_area->size >= sprite_area->used);
       assert(sprite_area->used >= sprite_area->first);
