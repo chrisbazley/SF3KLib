@@ -29,9 +29,12 @@
   CJB: 21-Apr-16: Cast pointer parameters to void * to match %p and
                   substituted %zu for %u to avoid casting parameters of
                   type size_t to unsigned int.
+  CJB: 11-May-26: Try to improve handling of mixed-sign arithmetic to
+                  stop warnings.
 */
 
 /* ISO library headers */
+#include <limits.h>
 #include <stddef.h>
 #include <string.h>
 
@@ -55,7 +58,7 @@ void spritearea_init(SpriteAreaHeader *sprite_area, size_t size)
 
 void *spritearea_alloc_ext(SpriteAreaHeader *sprite_area, size_t size)
 {
-  char *ext_data = NULL;
+  unsigned char *ext_data = NULL;
 
   DEBUGF("Allocating %zu bytes of extension data in sprite area %p\n",
         size, (void *)sprite_area);
@@ -68,7 +71,7 @@ void *spritearea_alloc_ext(SpriteAreaHeader *sprite_area, size_t size)
 
   assert(area_size >= 0);
   assert(area_used >= area_first);
-  assert((size_t)area_size >= sizeof(*sprite_area) + (area_used - area_first));
+  assert(area_size >= (int)sizeof(*sprite_area) + (area_used - area_first));
 
   /* Unless the offset to the first free word is positive, we can't tell
      the amount of free space in the area. */
@@ -78,9 +81,9 @@ void *spritearea_alloc_ext(SpriteAreaHeader *sprite_area, size_t size)
     assert(area_first >= (int)sizeof(*sprite_area));
 
     /* Guard against overrunning the end of the sprite area. */
-    if (area_used + size <= (size_t)area_size)
+    if (size < INT_MAX && area_used + (int)size <= area_size)
     {
-      ext_data = (char *)sprite_area + area_first;
+      ext_data = (unsigned char *)sprite_area + area_first;
 
       /* If there are any sprites in the sprite area then shift them upward
          to make room for (extra) extension data. */
@@ -130,7 +133,7 @@ SpriteHeader *spritearea_alloc_spr(SpriteAreaHeader *sprite_area, size_t size)
 
   assert(area_size >= 0);
   assert(area_used >= sprite_area->first);
-  assert((size_t)area_size >= sizeof(*sprite_area) + (area_used - sprite_area->first));
+  assert(area_size >= (int)sizeof(*sprite_area) + (area_used - sprite_area->first));
 
   /* Unless the offset to the first free word is positive, we can't tell
      the amount of free space in the area. */
@@ -139,10 +142,10 @@ SpriteHeader *spritearea_alloc_spr(SpriteAreaHeader *sprite_area, size_t size)
     DEBUGF("%d bytes are free in the sprite area\n", area_size - area_used);
 
     /* Guard against overrunning the end of the sprite area. */
-    if (area_used + size <= (size_t)area_size)
+    if (size < INT_MAX && area_used + (int)size <= area_size)
     {
       /* Calculate address of the free space within the sprite area */
-      sph = (SpriteHeader *)((char *)sprite_area + area_used);
+      sph = (SpriteHeader *)((unsigned char *)sprite_area + area_used);
 
       /* Only initialise the offset to the next sprite */
       sph->size = size;
