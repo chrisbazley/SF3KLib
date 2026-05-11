@@ -81,7 +81,7 @@ void *spritearea_alloc_ext(SpriteAreaHeader *sprite_area, size_t size)
     assert(area_first >= (int)sizeof(*sprite_area));
 
     /* Guard against overrunning the end of the sprite area. */
-    if (size < INT_MAX && area_used + (int)size <= area_size)
+    if (size <= INT_MAX && area_used + (int)size <= area_size)
     {
       ext_data = (unsigned char *)sprite_area + area_first;
 
@@ -142,7 +142,7 @@ SpriteHeader *spritearea_alloc_spr(SpriteAreaHeader *sprite_area, size_t size)
     DEBUGF("%d bytes are free in the sprite area\n", area_size - area_used);
 
     /* Guard against overrunning the end of the sprite area. */
-    if (size < INT_MAX && area_used + (int)size <= area_size)
+    if (size <= INT_MAX && area_used + (int)size <= area_size)
     {
       /* Calculate address of the free space within the sprite area */
       sph = (SpriteHeader *)((unsigned char *)sprite_area + area_used);
