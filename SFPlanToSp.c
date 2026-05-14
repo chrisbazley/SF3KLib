@@ -33,6 +33,7 @@
   CJB: 28-Apr-16: Now calls sf_planets_to_lone_spr to get the expected
                   sprite size instead of using an independent numeric
                   constant.
+  CJB: 14-Mar-26: Use type int instead of unsigned int for bitmap indices.
 */
 
 /* ISO library headers */
@@ -50,8 +51,8 @@
 
 size_t sf_planets_to_spr(SpriteAreaHeader       *sprite_area,
                          const SFPlanetsHeader  *planets,
-                         unsigned int            start,
-                         unsigned int            end,
+                         int                     start,
+                         int                     end,
                          const char             *sprite_name,
                          bool                    new_format,
                          SFBitmapsProgressFn    *prog_cb,
@@ -62,23 +63,22 @@ size_t sf_planets_to_spr(SpriteAreaHeader       *sprite_area,
     NULL, 0, planets, 0, sprite_name, new_format);
 
   assert(planets != NULL);
+  assert(start >= 0);
   assert(start <= end);
 
   /* Ensure we do not read from beyond the end of the planets set */
-  if (planets->last_image_num < 0)
-    end = 0;
-  else if (end > (unsigned int)planets->last_image_num + 1)
+  if (end > planets->last_image_num + 1)
     end = planets->last_image_num + 1;
 
   if (sprite_area != NULL)
   {
-    for (unsigned int image = start; image < end; image++)
+    for (int image = start; image < end; image++)
     {
       /* Call the progress function before processing every bitmap,
          if supplied */
       if (prog_cb != NULL)
       {
-        if (!prog_cb(prog_arg, image))
+        if (!prog_cb(prog_arg, (unsigned)image))
         {
           DEBUGF("Conversion aborted by progress callback\n");
           break;
@@ -102,7 +102,7 @@ size_t sf_planets_to_spr(SpriteAreaHeader       *sprite_area,
     } /* loop back (next image) */
   }
 
-  output_size = (end - start) * sprite_size;
+  output_size = (size_t)(end - start) * sprite_size;
   DEBUGF("Required free space is %zu\n", output_size);
   return output_size;
 }

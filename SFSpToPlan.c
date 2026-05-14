@@ -33,6 +33,7 @@
   CJB: 21-Nov-20: Pass the actual sprite name to the query callback instead
                   of the expected name prefix.
   CJB: 11-May-26: Fix type mismatch with format specifier %p.
+  CJB: 14-Mar-26: Use type int instead of unsigned int for bitmap indices.
 */
 
 /* ISO library headers */
@@ -54,8 +55,8 @@
 size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
                          size_t                  planets_size,
                          const SpriteAreaHeader *sprite_area,
-                         unsigned int            start,
-                         unsigned int            end,
+                         int                     start,
+                         int                     end,
                          const char             *sprite_name,
                          SFBitmapsProgressFn    *prog_cb,
                          SFBitmapsQueryFn       *query_cb,
@@ -64,6 +65,7 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
   size_t output_size = 0, mem_used = sizeof(*planets);
 
   assert(sprite_area != NULL);
+  assert(start >= 0);
   assert(start <= end);
 
   if (planets == NULL)
@@ -75,21 +77,19 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
     /* Calculate the end of memory already used within the output buffer */
     for (int pl = 0; pl <= planets->last_image_num; pl++)
     {
-      size_t end = planets->data_offsets[pl].image_A + sizeof(SFPlanetBitmap);
-      if (end > mem_used)
-        mem_used = end;
+      size_t end_offset = planets->data_offsets[pl].image_A + sizeof(SFPlanetBitmap);
+      if (end_offset > mem_used)
+        mem_used = end_offset;
 
-      end = planets->data_offsets[pl].image_B + sizeof(SFPlanetBitmap);
-      if (end > mem_used)
-        mem_used = end;
+      end_offset = planets->data_offsets[pl].image_B + sizeof (SFPlanetBitmap);
+      if (end_offset)
+        mem_used = end_offset;
     }
   }
   DEBUGF("Amount of buffer space already used is %zu\n", mem_used);
 
   /* Ensure we do not read from beyond the end of the sprite area */
-  if (sprite_area->sprite_count < 0)
-    end = 0;
-  if (end > (unsigned int)sprite_area->sprite_count)
+  if (end > sprite_area->sprite_count)
     end = sprite_area->sprite_count;
 
   assert(sprite_name != NULL);
@@ -100,7 +100,7 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
 
   /* We always have to iterate through the sprites from the beginning of the
      area until we find the first one to be converted. */
-  for (unsigned int sp = 0; sp < end; sp++)
+  for (int sp = 0; sp < end; sp++)
   {
     if (sp >= start)
     {
@@ -110,7 +110,7 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
 
       if (prog_cb != NULL)
       {
-        if (!prog_cb(cb_arg, sp))
+        if (!prog_cb(cb_arg, (unsigned)sp))
         {
           DEBUGF("Conversion aborted by progress callback\n");
           break;
@@ -120,7 +120,7 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
       /* The sprite name embedded in the header may be unterminated,
          so copy it to a separate buffer and append a nul terminator */
       STRCPY_SAFE(name, sph->name);
-      DEBUGF("Validating sprite %u:%p ('%s')\n", sp, (void *)sph, name);
+      DEBUGF("Validating sprite %d:%p ('%s')\n", sp, (void *)sph, name);
 
       /* Check sprite header (ignore DPI, mask, palette) */
       if (strncmp(name, sprite_name, name_len) == 0 &&
@@ -203,7 +203,7 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
     }
     else
     {
-      DEBUGF("Skipping sprite %u:%p\n", sp, (void *)sph);
+      DEBUGF("Skipping sprite %d:%p\n", sp, (void *)sph);
     }
 
     /* Calculate address of next sprite */

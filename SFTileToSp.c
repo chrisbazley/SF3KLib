@@ -31,6 +31,7 @@
   CJB: 28-Apr-16: Now calls sf_tiles_to_lone_spr to get the expected sprite
                   size instead of using an independent numeric constant.
   CJB: 11-Nov-18: Fixed broken #include.
+  CJB: 14-Mar-26: Use type int instead of unsigned int for bitmap indices.
 */
 
 /* ISO library headers */
@@ -48,8 +49,8 @@
 
 size_t sf_tiles_to_spr(SpriteAreaHeader    *sprite_area,
                        const SFMapTileSet  *tiles,
-                       unsigned int         start,
-                       unsigned int         end,
+                       int                  start,
+                       int                  end,
                        const char          *sprite_name,
                        bool                 new_format,
                        SFBitmapsProgressFn *prog_cb,
@@ -60,23 +61,22 @@ size_t sf_tiles_to_spr(SpriteAreaHeader    *sprite_area,
     NULL, 0, tiles, 0, sprite_name, new_format);
 
   assert(tiles != NULL);
+  assert(start >= 0);
   assert(start <= end);
 
   /* Ensure we do not read from beyond the end of the tiles set */
-  if (tiles->last_tile_num < 0)
-    end = 0;
-  if (end > (unsigned int)tiles->last_tile_num + 1)
+  if (end > tiles->last_tile_num + 1)
     end = tiles->last_tile_num + 1;
 
   if (sprite_area != NULL)
   {
-    for (unsigned int tile = start; tile < end; tile++)
+    for (int tile = start; tile < end; tile++)
     {
       /* Call the progress function before processing every bitmap,
          if supplied */
       if (prog_cb != NULL)
       {
-        if (!prog_cb(prog_arg, tile))
+        if (!prog_cb(prog_arg, (unsigned)tile))
         {
           DEBUGF("Conversion aborted by progress callback\n");
           break;
@@ -100,7 +100,7 @@ size_t sf_tiles_to_spr(SpriteAreaHeader    *sprite_area,
     } /* loop back (next image) */
   }
 
-  output_size = (end - start) * sprite_size;
+  output_size = (size_t)(end - start) * sprite_size;
   DEBUGF("Required free space is %zu\n", output_size);
   return output_size;
 }

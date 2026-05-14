@@ -38,6 +38,7 @@
   CJB: 14-Nov-18: Allow the sprite name pointer to be null if no output
                   buffer is supplied (restoring original behaviour).
                   More C99-style declarations.
+  CJB: 14-Mar-26: Use type int instead of unsigned int for bitmap indices.
 */
 
 /* ISO library headers */
@@ -68,7 +69,7 @@ enum
 size_t sf_planets_to_lone_spr(SpriteHeader          *sprite,
                               size_t                 sprite_size,
                               const SFPlanetsHeader *planets,
-                              unsigned int           n,
+                              int                    n,
                               const char            *sprite_name,
                               bool                   new_format)
 {
@@ -76,9 +77,9 @@ size_t sf_planets_to_lone_spr(SpriteHeader          *sprite,
 
   assert(planets != NULL);
 
-  if (planets->last_image_num < 0 ||
-      n > (unsigned int)planets->last_image_num ||
-      n >= ARRAY_SIZE(planets->data_offsets))
+  if (n < 0 ||
+      n > planets->last_image_num ||
+      (size_t)n >= ARRAY_SIZE(planets->data_offsets))
   {
     output_size = SIZE_MAX; /* Bad planet number */
   }
@@ -90,12 +91,12 @@ size_t sf_planets_to_lone_spr(SpriteHeader          *sprite,
       assert(sprite_name != NULL);
 
       /* Initialise header of new sprite */
-      DEBUGF("Initialising header of sprite %u at %p\n", n, (void *)sprite);
+      DEBUGF("Initialising header of sprite %d at %p\n", n, (void *)sprite);
       sprite->size = output_size;
       memset(sprite->name, 0, sizeof(sprite->name));
 
       char numstr[16];
-      int nout = sprintf(numstr, "%u", n);
+      int nout = sprintf(numstr, "%d", n);
       assert(nout >= 0); /* no formatting error */
 
       const int avail = (int)sizeof(sprite->name) - 1; /* -1 for _ */

@@ -33,6 +33,8 @@ History:
                   creating sprite(s) in a proffered sprite area.
   CJB: 19-Sep-15: Documented which parameters are ignored if no output buffer
                   is specified.
+  CJB: 14-Mar-26: Use type int instead of unsigned int for bitmap indices
+                  (exempting SFBitmapsProgressFn, for compatibility).
 */
 
 #ifndef SFBitmaps_h
@@ -65,7 +67,7 @@ typedef bool SFBitmapsQueryFn(const void *arg, const char *name);
 extern size_t sf_tiles_to_lone_spr(SpriteHeader       */*sprite*/,
                                    size_t              /*sprite_size*/,
                                    const SFMapTileSet */*tiles*/,
-                                   unsigned int        /*n*/,
+                                   int                 /*n*/,
                                    const char         */*sprite_name*/,
                                    bool                /*new_format*/);
    /*
@@ -84,8 +86,8 @@ extern size_t sf_tiles_to_lone_spr(SpriteHeader       */*sprite*/,
 
 extern size_t sf_tiles_to_spr(SpriteAreaHeader    */*sprite_area*/,
                               const SFMapTileSet  */*tiles*/,
-                              unsigned int         /*start*/,
-                              unsigned int         /*end*/,
+                              int                  /*start*/,
+                              int                  /*end*/,
                               const char          */*sprite_name*/,
                               bool                 /*new_format*/,
                               SFBitmapsProgressFn */*prog_cb*/,
@@ -111,8 +113,8 @@ extern size_t sf_tiles_to_spr(SpriteAreaHeader    */*sprite_area*/,
 extern size_t sf_spr_to_tiles(SFMapTileSet           */*tiles*/,
                               size_t                  /*tiles_size*/,
                               const SpriteAreaHeader */*sprite_area*/,
-                              unsigned int            /*start*/,
-                              unsigned int            /*end*/,
+                              int                     /*start*/,
+                              int                     /*end*/,
                               const char             */*sprite_name*/,
                               SFBitmapsProgressFn    */*prog_cb*/,
                               SFBitmapsQueryFn       */*query_cb*/,
@@ -136,7 +138,7 @@ extern size_t sf_spr_to_tiles(SFMapTileSet           */*tiles*/,
 extern size_t sf_planets_to_lone_spr(SpriteHeader          */*sprite*/,
                                      size_t                 /*sprite_size*/,
                                      const SFPlanetsHeader */*planets*/,
-                                     unsigned int           /*n*/,
+                                     int                    /*n*/,
                                      const char            */*sprite_name*/,
                                      bool                   /*new_format*/);
    /*
@@ -154,8 +156,8 @@ extern size_t sf_planets_to_lone_spr(SpriteHeader          */*sprite*/,
 
 extern size_t sf_planets_to_spr(SpriteAreaHeader       */*sprite_area*/,
                                 const SFPlanetsHeader  */*planets*/,
-                                unsigned int            /*start*/,
-                                unsigned int            /*end*/,
+                                int                     /*start*/,
+                                int                     /*end*/,
                                 const char             */*sprite_name*/,
                                 bool                    /*new_format*/,
                                 SFBitmapsProgressFn    */*prog_cb*/,
@@ -181,8 +183,8 @@ extern size_t sf_planets_to_spr(SpriteAreaHeader       */*sprite_area*/,
 extern size_t sf_spr_to_planets(SFPlanetsHeader        */*planets*/,
                                 size_t                  /*planets_size*/,
                                 const SpriteAreaHeader */*sprite_area*/,
-                                unsigned int            /*start*/,
-                                unsigned int            /*end*/,
+                                int                     /*start*/,
+                                int                     /*end*/,
                                 const char             */*sprite_name*/,
                                 SFBitmapsProgressFn    */*prog_cb*/,
                                 SFBitmapsQueryFn       */*query_cb*/,
@@ -244,8 +246,8 @@ extern size_t sf_sky_to_spr(SpriteAreaHeader */*sprite_area*/,
 extern size_t sf_spr_to_sky(SFSky                  */*sky*/,
                             size_t                  /*sky_size*/,
                             const SpriteAreaHeader */*sprite_area*/,
-                            unsigned int            /*start*/,
-                            unsigned int            /*end*/,
+                            int                     /*start*/,
+                            int                     /*end*/,
                             const char             */*sprite_name*/,
                             SFBitmapsProgressFn    */*prog_cb*/,
                             SFBitmapsQueryFn       */*query_cb*/,

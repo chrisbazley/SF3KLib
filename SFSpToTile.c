@@ -30,6 +30,7 @@
                   to match the parameter type.
   CJB: 21-Nov-20: Pass the actual sprite name to the query callback instead
                   of the expected name prefix.
+  CJB: 14-Mar-26: Use type int instead of unsigned int for bitmap indices.
 */
 
 /* ISO library headers */
@@ -51,8 +52,8 @@
 size_t sf_spr_to_tiles(SFMapTileSet           *tiles,
                        size_t                  tiles_size,
                        const SpriteAreaHeader *sprite_area,
-                       unsigned int            start,
-                       unsigned int            end,
+                       int                     start,
+                       int                     end,
                        const char             *sprite_name,
                        SFBitmapsProgressFn    *prog_cb,
                        SFBitmapsQueryFn       *query_cb,
@@ -61,15 +62,14 @@ size_t sf_spr_to_tiles(SFMapTileSet           *tiles,
   size_t output_size = 0;
 
   assert(sprite_area != NULL);
+  assert(start >= 0);
   assert(start <= end);
 
   if (tiles == NULL)
     tiles_size = 0;
 
   /* Ensure we do not read from beyond the end of the sprite area */
-  if (sprite_area->sprite_count < 0)
-    end = 0;
-  else if (end > (unsigned int)sprite_area->sprite_count)
+  if (end > sprite_area->sprite_count)
     end = sprite_area->sprite_count;
 
   assert(sprite_name != NULL);
@@ -80,7 +80,7 @@ size_t sf_spr_to_tiles(SFMapTileSet           *tiles,
 
   /* We always have to iterate through the sprites from the beginning of the
      area until we find the first one to be converted. */
-  for (unsigned int sp = 0; sp < end; sp++)
+  for (int sp = 0; sp < end; sp++)
   {
     if (sp >= start)
     {
@@ -90,7 +90,7 @@ size_t sf_spr_to_tiles(SFMapTileSet           *tiles,
 
       if (prog_cb != NULL)
       {
-        if (!prog_cb(cb_arg, sp))
+        if (!prog_cb(cb_arg, (unsigned)sp))
         {
           DEBUGF("Conversion aborted by progress callback\n");
           break;
@@ -100,7 +100,7 @@ size_t sf_spr_to_tiles(SFMapTileSet           *tiles,
       /* The sprite name embedded in the header may be unterminated,
          so copy it to a separate buffer and append a nul terminator */
       STRCPY_SAFE(name, sph->name);
-      DEBUGF("Validating sprite %u:%p ('%s')\n", sp, (void *)sph, name);
+      DEBUGF("Validating sprite %d:%p ('%s')\n", sp, (void *)sph, name);
 
       /* Check sprite header (ignore DPI, mask, palette) */
       if (strncmp(name, sprite_name, name_len) == 0 &&
@@ -162,7 +162,7 @@ size_t sf_spr_to_tiles(SFMapTileSet           *tiles,
     }
     else
     {
-      DEBUGF("Skipping sprite %u:%p\n", sp, (void *)sph);
+      DEBUGF("Skipping sprite %d:%p\n", sp, (void *)sph);
     }
 
     /* Calculate address of next sprite */
