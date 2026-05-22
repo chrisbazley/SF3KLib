@@ -35,6 +35,7 @@
                   buffer is supplied (restoring original behaviour).
                   More C99-style declarations.
   CJB: 14-Mar-26: Use type int instead of unsigned int for bitmap indices.
+  CJB: 26-May-26: Try to avoid warning about assignment of output_size to int.
 */
 
 /* ISO library headers */
@@ -87,7 +88,7 @@ size_t sf_tiles_to_lone_spr(SpriteHeader       *sprite,
 
       /* Initialise header of new sprite */
       DEBUGF("Initialising header of sprite %d at %p\n", n, (void *)sprite);
-      sprite->size = output_size;
+      sprite->size = SpriteSize;
       memset(sprite->name, 0, sizeof(sprite->name));
 
       char numstr[16];
