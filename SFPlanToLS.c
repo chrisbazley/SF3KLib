@@ -40,6 +40,7 @@
                   More C99-style declarations.
   CJB: 14-Mar-26: Use type int instead of unsigned int for bitmap indices.
   CJB: 22-May-26: Try to fix warning about conversion from size_t to int.
+                  Use unsigned char instead of char for byte pointers.
 */
 
 /* ISO library headers */
@@ -122,10 +123,10 @@ size_t sf_planets_to_lone_spr(SpriteHeader          *sprite,
       sprite->type = new_format ? NewSpriteType : OldSpriteType;
 
       /* Calculate address of sprite bitmap */
-      char *const sprite_bitmap = (char *)sprite + sprite->image;
+      unsigned char *const sprite_bitmap = (unsigned char *)sprite + sprite->image;
 
       /* Calculate address of left-aligned planet image bitmap */
-      const char *const image_bitmap = (char *)planets +
+      const unsigned char *const image_bitmap = (unsigned char *)planets +
                                        planets->data_offsets[n].image_A;
 
       /* Copy raw bitmap image to sprite area, one row at a time
