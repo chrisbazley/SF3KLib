@@ -32,6 +32,7 @@
   CJB: 11-May-26: Try to improve handling of mixed-sign arithmetic to
                   stop warnings.
   CJB: 26-May-26: Explicitly cast size_t to int to stop warnings.
+                  Assign a compound literal to ensure full initialisation.
 */
 
 /* ISO library headers */
@@ -53,10 +54,12 @@ void spritearea_init(SpriteAreaHeader *sprite_area, size_t size)
   assert(sprite_area != NULL);
   assert(size <= (unsigned)INT_MAX);
 
-  sprite_area->size = (int)size;
-  sprite_area->sprite_count = 0;
-  sprite_area->first = sizeof(*sprite_area);
-  sprite_area->used = sizeof(*sprite_area);
+  *sprite_area = (SpriteAreaHeader){
+    .size = (int)size,
+    .sprite_count = 0,
+    .first = sizeof(*sprite_area),
+    .used = sizeof(*sprite_area),
+  };
 }
 
 void *spritearea_alloc_ext(SpriteAreaHeader *sprite_area, size_t size)
