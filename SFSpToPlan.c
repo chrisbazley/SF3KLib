@@ -34,6 +34,8 @@
                   of the expected name prefix.
   CJB: 11-May-26: Fix type mismatch with format specifier %p.
   CJB: 14-Mar-26: Use type int instead of unsigned int for bitmap indices.
+  CJB: 26-May-26: Use unsigned char instead of char for byte pointers.
+                  Explicitly convert size_t to uint32_t.
 */
 
 /* ISO library headers */
@@ -42,6 +44,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
+#include <stdint.h>
+#include <limits.h>
 
 /* CBOSLib headers */
 #include "SprFormats.h"
@@ -96,7 +100,7 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
   size_t const name_len = strlen(sprite_name);
 
   /* Calculate address of first sprite */
-  const SpriteHeader *sph = (SpriteHeader *)((char *)sprite_area + sprite_area->first);
+  const SpriteHeader *sph = (SpriteHeader *)((unsigned char *)sprite_area + sprite_area->first);
 
   /* We always have to iterate through the sprites from the beginning of the
      area until we find the first one to be converted. */
@@ -106,7 +110,7 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
     {
       unsigned long image_num;
       char name[sizeof(sph->name) + 1];
-      char *endp;
+      unsigned char *endp;
 
       if (prog_cb != NULL)
       {
@@ -142,8 +146,8 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
         /* Guard against overrunning the end of the output buffer */
         if (output_size <= planets_size)
         {
-          const char *sprite_bitmap;
-          char *image_A, *image_B;
+          const unsigned char *sprite_bitmap;
+          unsigned char *image_A, *image_B;
 
           /* Increase the record of the number of images if necessary */
           if (planets->last_image_num < 0 ||
@@ -157,18 +161,22 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
              existing bitmaps for this image because it would be weird for the
              returned size requirement to vary depending upon whether an output
              buffer was specified. */
-          planets->data_offsets[image_num].image_A = mem_used;
+          assert((uint32_t)mem_used == mem_used);
+          planets->data_offsets[image_num].image_A = (uint32_t)mem_used;
+          assert(mem_used <= SIZE_MAX - sizeof(SFPlanetBitmap));
           mem_used += sizeof(SFPlanetBitmap);
-          image_A = (char *)planets + planets->data_offsets[image_num].image_A;
+          image_A = (unsigned char *)planets + planets->data_offsets[image_num].image_A;
           DEBUGF("Aligned bitmap will be written at %p\n", (void *)image_A);
 
-          planets->data_offsets[image_num].image_B = mem_used;
+          assert((uint32_t)mem_used == mem_used);
+          planets->data_offsets[image_num].image_B = (uint32_t)mem_used;
+          assert(mem_used <= SIZE_MAX - sizeof(SFPlanetBitmap));
           mem_used += sizeof(SFPlanetBitmap);
-          image_B = (char *)planets + planets->data_offsets[image_num].image_B;
+          image_B = (unsigned char *)planets + planets->data_offsets[image_num].image_B;
           DEBUGF("Non-aligned bitmap will be written at %p\n", (void *)image_B);
 
           /* Calculate address of start of sprite bitmap */
-          sprite_bitmap = (char *)sph + sph->image;
+          sprite_bitmap = (unsigned char *)sph + sph->image;
           DEBUGF("Source bitmap is at %p\n", (void *)sprite_bitmap);
 
           /* We make two copies of the input sprite; one word-aligned and the
@@ -207,7 +215,7 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
     }
 
     /* Calculate address of next sprite */
-    sph = (SpriteHeader *)((char *)sph + sph->size);
+    sph = (SpriteHeader *)((unsigned char *)sph + sph->size);
   } /* loop back (next image) */
 
   DEBUGF("Required buffer size is %zu\n", output_size);
