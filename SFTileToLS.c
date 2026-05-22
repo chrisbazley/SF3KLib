@@ -36,6 +36,7 @@
                   More C99-style declarations.
   CJB: 14-Mar-26: Use type int instead of unsigned int for bitmap indices.
   CJB: 26-May-26: Try to avoid warning about assignment of output_size to int.
+                  Use unsigned char instead of char for byte pointers.
 */
 
 /* ISO library headers */
@@ -115,10 +116,10 @@ size_t sf_tiles_to_lone_spr(SpriteHeader       *sprite,
       sprite->type = new_format ? NewSpriteType : OldSpriteType;
 
       /* Calculate address of sprite bitmap */
-      char *const sprite_bitmap = (char *)sprite + sprite->image;
+      unsigned char *const sprite_bitmap = (unsigned char *)sprite + sprite->image;
 
       /* Calculate address of end of the tile bitmap to be read */
-      const char *const end_of_tile = (char *)tiles + sizeof(*tiles) +
+      const unsigned char *const end_of_tile = (unsigned char *)tiles + sizeof(*tiles) +
                                       (n + 1) * WORD_ALIGN(SFMapTile_Width) *
                                       SFMapTile_Height;
 
