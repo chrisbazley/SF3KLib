@@ -41,6 +41,7 @@
   CJB: 14-Mar-26: Use type int instead of unsigned int for bitmap indices.
   CJB: 22-May-26: Try to fix warning about conversion from size_t to int.
                   Use unsigned char instead of char for byte pointers.
+                  Assign compound literal to ensure full initialisation.
 */
 
 /* ISO library headers */
@@ -114,13 +115,15 @@ size_t sf_planets_to_lone_spr(SpriteHeader          *sprite,
 
       /* We will chop 2 pixel columns off the left or right edge
          (depending on alignment) */
-      sprite->width = WORD_ALIGN(SFPlanet_Width - 2) / 4 - 1;
-      sprite->height = SFPlanet_Height - 1;
-      sprite->left_bit = 0; /* lefthand wastage is deprecated */
-      sprite->right_bit = SPRITE_RIGHT_BIT(SFPlanet_Width - 2, 8);
-      sprite->image = sizeof(*sprite);
-      sprite->mask = sizeof(*sprite);
-      sprite->type = new_format ? NewSpriteType : OldSpriteType;
+      *sprite = (SpriteHeader){
+        .width = WORD_ALIGN(SFPlanet_Width - 2) / 4 - 1,
+        .height = SFPlanet_Height - 1,
+        .left_bit = 0, /* lefthand wastage is deprecated */
+        .right_bit = SPRITE_RIGHT_BIT(SFPlanet_Width - 2, 8),
+        .image = sizeof(*sprite),
+        .mask = sizeof(*sprite),
+        .type = new_format ? NewSpriteType : OldSpriteType,
+      };
 
       /* Calculate address of sprite bitmap */
       unsigned char *const sprite_bitmap = (unsigned char *)sprite + sprite->image;
