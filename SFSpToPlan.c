@@ -110,7 +110,7 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
     {
       unsigned long image_num;
       char name[sizeof(sph->name) + 1];
-      unsigned char *endp;
+      char *endp;
 
       if (prog_cb != NULL)
       {
