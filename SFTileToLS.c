@@ -37,6 +37,7 @@
   CJB: 14-Mar-26: Use type int instead of unsigned int for bitmap indices.
   CJB: 26-May-26: Try to avoid warning about assignment of output_size to int.
                   Use unsigned char instead of char for byte pointers.
+                  Assign compound literal to ensure full initialisation.
 */
 
 /* ISO library headers */
@@ -107,13 +108,15 @@ size_t sf_tiles_to_lone_spr(SpriteHeader       *sprite,
       }
       DEBUGF("Sprite name is %.*s\n", (int)sizeof(sprite->name), sprite->name);
 
-      sprite->width = WORD_ALIGN(SFMapTile_Width) / 4 - 1;
-      sprite->height = SFMapTile_Height - 1;
-      sprite->left_bit = 0;
-      sprite->right_bit = SPRITE_RIGHT_BIT(SFMapTile_Width, 8);
-      sprite->image = sizeof(*sprite);
-      sprite->mask = sizeof(*sprite);
-      sprite->type = new_format ? NewSpriteType : OldSpriteType;
+      *sprite = (SpriteHeader){
+        .width = WORD_ALIGN(SFMapTile_Width) / 4 - 1,
+        .height = SFMapTile_Height - 1,
+        .left_bit = 0,
+        .right_bit = SPRITE_RIGHT_BIT(SFMapTile_Width, 8),
+        .image = sizeof(*sprite),
+        .mask = sizeof(*sprite),
+        .type = new_format ? NewSpriteType : OldSpriteType,
+      };
 
       /* Calculate address of sprite bitmap */
       unsigned char *const sprite_bitmap = (unsigned char *)sprite + sprite->image;
