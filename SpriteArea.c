@@ -31,6 +31,7 @@
                   type size_t to unsigned int.
   CJB: 11-May-26: Try to improve handling of mixed-sign arithmetic to
                   stop warnings.
+  CJB: 26-May-26: Explicitly cast size_t to int to stop warnings.
 */
 
 /* ISO library headers */
@@ -50,7 +51,9 @@ void spritearea_init(SpriteAreaHeader *sprite_area, size_t size)
   DEBUGF("Initialising header of sprite area at %p\n", (void *)sprite_area);
 
   assert(sprite_area != NULL);
-  sprite_area->size = size;
+  assert(size <= (unsigned)INT_MAX);
+
+  sprite_area->size = (int)size;
   sprite_area->sprite_count = 0;
   sprite_area->first = sizeof(*sprite_area);
   sprite_area->used = sizeof(*sprite_area);
@@ -148,7 +151,7 @@ SpriteHeader *spritearea_alloc_spr(SpriteAreaHeader *sprite_area, size_t size)
       sph = (SpriteHeader *)((unsigned char *)sprite_area + area_used);
 
       /* Only initialise the offset to the next sprite */
-      sph->size = size;
+      sph->size = (int)size;
 
       sprite_area->sprite_count++;
       sprite_area->used = area_used + (int)size;
