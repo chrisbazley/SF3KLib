@@ -31,6 +31,7 @@
   CJB: 21-Nov-20: Pass the actual sprite name to the query callback instead
                   of the expected name.
   CJB: 14-Mar-26: Use type int instead of unsigned int for bitmap indices.
+  CJB: 22-May-26: Use unsigned char instead of char for byte pointers.
 */
 
 /* ISO library headers */
@@ -73,7 +74,7 @@ size_t sf_spr_to_sky(SFSky                  *sky,
   assert(sprite_name != NULL);
 
   /* Calculate address of first sprite */
-  const SpriteHeader *sph = (SpriteHeader *)((char *)sprite_area + sprite_area->first);
+  const SpriteHeader *sph = (SpriteHeader *)((unsigned char *)sprite_area + sprite_area->first);
 
   /* We always have to iterate through the sprites from the beginning of the
      area until we find the first one to be converted. */
@@ -112,7 +113,7 @@ size_t sf_spr_to_sky(SFSky                  *sky,
         if (output_size <= sky_size)
         {
           /* Calculate address of start of sprite bitmap */
-          const char * const sprite_bitmap = (char *)sph + sph->image;
+          const unsigned char * const sprite_bitmap = (unsigned char *)sph + sph->image;
           DEBUGF("Source bitmap is at %p\n", (void *)sprite_bitmap);
 
           /* Copy sprite's bitmap as the sky pixel data, one row at a time
@@ -146,7 +147,7 @@ size_t sf_spr_to_sky(SFSky                  *sky,
     }
 
     /* Calculate address of next sprite */
-    sph = (SpriteHeader *)((char *)sph + sph->size);
+    sph = (SpriteHeader *)((unsigned char *)sph + sph->size);
   } /* loop back (next image) */
 
   DEBUGF("Required buffer size is %zu\n", output_size);
