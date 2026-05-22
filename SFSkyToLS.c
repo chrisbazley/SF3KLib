@@ -25,6 +25,7 @@
   CJB: 18-Apr-15: Assertions are now provided by debug.h.
   CJB: 10-Apr-16: Cast pointer parameters to void * to match %p.
   CJB: 14-Nov-18: More C99-style declarations.
+  CJB: 22-May-26: Use unsigned char instead of char for byte pointers.
 */
 
 /* ISO library headers */
@@ -80,7 +81,7 @@ size_t sf_sky_to_lone_spr(SpriteHeader *sprite,
     sprite->type = new_format ? NewSpriteType : OldSpriteType;
 
     /* Calculate address of sprite bitmap */
-    char *const sprite_bitmap = (char *)sprite + sprite->image;
+    unsigned char *const sprite_bitmap = (unsigned char *)sprite + sprite->image;
 
     /* Append the raw bitmap to the output sprite, one row at a time
        (same pixel format etc) */
