@@ -26,6 +26,7 @@
   CJB: 10-Apr-16: Cast pointer parameters to void * to match %p.
   CJB: 14-Nov-18: More C99-style declarations.
   CJB: 22-May-26: Use unsigned char instead of char for byte pointers.
+                  Assign compound literal to ensure full initialisation.
 */
 
 /* ISO library headers */
@@ -72,13 +73,15 @@ size_t sf_sky_to_lone_spr(SpriteHeader *sprite,
     /* Note: sprite names of maximum length needn't be terminated. */
     DEBUGF("Sprite name is %.*s\n", (int)sizeof(sprite->name), sprite->name);
 
-    sprite->width = WORD_ALIGN(SFSky_Width) / 4 - 1;
-    sprite->height = SFSky_Height - 1;
-    sprite->left_bit = 0; /* lefthand wastage is deprecated */
-    sprite->right_bit = SPRITE_RIGHT_BIT(SFSky_Width, 8);
-    sprite->image = sizeof(*sprite);
-    sprite->mask = sizeof(*sprite);
-    sprite->type = new_format ? NewSpriteType : OldSpriteType;
+    *sprite = (SpriteHeader){
+      .width = WORD_ALIGN(SFSky_Width) / 4 - 1,
+      .height = SFSky_Height - 1,
+      .left_bit = 0, /* lefthand wastage is deprecated */
+      .right_bit = SPRITE_RIGHT_BIT(SFSky_Width, 8),
+      .image = sizeof(*sprite),
+      .mask = sizeof(*sprite),
+      .type = new_format ? NewSpriteType : OldSpriteType,
+    };
 
     /* Calculate address of sprite bitmap */
     unsigned char *const sprite_bitmap = (unsigned char *)sprite + sprite->image;
