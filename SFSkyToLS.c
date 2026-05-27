@@ -70,6 +70,7 @@ size_t sf_sky_to_lone_spr(SpriteHeader *sprite,
 
     *sprite = (SpriteHeader){
       .size = SpriteSize,
+      .name = "",
       .width = WORD_ALIGN(SFSky_Width) / 4 - 1,
       .height = SFSky_Height - 1,
       .left_bit = 0, /* lefthand wastage is deprecated */
