@@ -44,6 +44,8 @@
                   Assign compound literal to ensure full initialisation.
   CJB: 27-May-26: Reorder statements to avoid the compound literal
                   assignment overwriting the sprite name and size.
+                  Stop abusing sprintf in such a way that it writes
+                  one character beyond the end of the output buffer.
 */
 
 /* ISO library headers */
@@ -113,17 +115,21 @@ size_t sf_planets_to_lone_spr(SpriteHeader          *sprite,
       };
 
       char numstr[16];
-      int nout = sprintf(numstr, "%d", n);
+      int const nout = sprintf(numstr, "_%d", n);
       assert(nout >= 0); /* no formatting error */
 
-      const int avail = (int)sizeof(sprite->name) - 1; /* -1 for _ */
-      if (nout <= avail)
+      size_t avail = sizeof(sprite->name);
+      if ((unsigned)nout <= avail)
       {
-        /* Note: may overwrite first byte of 'width' member with '\0'
-           (sprite names of maximum length needn't be terminated). */
-        nout = sprintf(sprite->name, "%.*s_%s",
-               avail - nout, sprite_name, numstr);
-        assert(nout >= 0); /* no formatting error */
+        /* sprite names of maximum length needn't be terminated */
+        avail -= (unsigned)nout;
+        size_t name_len = strlen(sprite_name);
+        if (name_len > avail)
+        {
+            name_len = avail;
+        }
+        memcpy(sprite->name, sprite_name, name_len);
+        memcpy(sprite->name + name_len, numstr, (size_t)nout);
       }
       DEBUGF("Sprite name is %.*s\n", (int)sizeof(sprite->name), sprite->name);
 
