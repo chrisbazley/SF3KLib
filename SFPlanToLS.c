@@ -42,6 +42,8 @@
   CJB: 22-May-26: Try to fix warning about conversion from size_t to int.
                   Use unsigned char instead of char for byte pointers.
                   Assign compound literal to ensure full initialisation.
+  CJB: 27-May-26: Reorder statements to avoid the compound literal
+                  assignment overwriting the sprite name and size.
 */
 
 /* ISO library headers */
@@ -95,8 +97,20 @@ size_t sf_planets_to_lone_spr(SpriteHeader          *sprite,
 
       /* Initialise header of new sprite */
       DEBUGF("Initialising header of sprite %d at %p\n", n, (void *)sprite);
-      sprite->size = SpriteSize;
-      memset(sprite->name, 0, sizeof(sprite->name));
+
+      /* We will chop 2 pixel columns off the left or right edge
+         (depending on alignment) */
+      *sprite = (SpriteHeader){
+        .size = SpriteSize,
+        .name = "",
+        .width = WORD_ALIGN(SFPlanet_Width - 2) / 4 - 1,
+        .height = SFPlanet_Height - 1,
+        .left_bit = 0, /* lefthand wastage is deprecated */
+        .right_bit = SPRITE_RIGHT_BIT(SFPlanet_Width - 2, 8),
+        .image = sizeof(*sprite),
+        .mask = sizeof(*sprite),
+        .type = new_format ? NewSpriteType : OldSpriteType,
+      };
 
       char numstr[16];
       int nout = sprintf(numstr, "%d", n);
@@ -112,18 +126,6 @@ size_t sf_planets_to_lone_spr(SpriteHeader          *sprite,
         assert(nout >= 0); /* no formatting error */
       }
       DEBUGF("Sprite name is %.*s\n", (int)sizeof(sprite->name), sprite->name);
-
-      /* We will chop 2 pixel columns off the left or right edge
-         (depending on alignment) */
-      *sprite = (SpriteHeader){
-        .width = WORD_ALIGN(SFPlanet_Width - 2) / 4 - 1,
-        .height = SFPlanet_Height - 1,
-        .left_bit = 0, /* lefthand wastage is deprecated */
-        .right_bit = SPRITE_RIGHT_BIT(SFPlanet_Width - 2, 8),
-        .image = sizeof(*sprite),
-        .mask = sizeof(*sprite),
-        .type = new_format ? NewSpriteType : OldSpriteType,
-      };
 
       /* Calculate address of sprite bitmap */
       unsigned char *const sprite_bitmap = (unsigned char *)sprite + sprite->image;
