@@ -38,6 +38,8 @@
   CJB: 26-May-26: Try to avoid warning about assignment of output_size to int.
                   Use unsigned char instead of char for byte pointers.
                   Assign compound literal to ensure full initialisation.
+  CJB: 27-May-26: Reorder statemehts to avoid overwriting sprite name and
+                  size with compound literal assignment.
 */
 
 /* ISO library headers */
@@ -89,10 +91,18 @@ size_t sf_tiles_to_lone_spr(SpriteHeader       *sprite,
       assert(sprite_name != NULL);
 
       /* Initialise header of new sprite */
-      DEBUGF("Initialising header of sprite %d at %p\n", n, (void *)sprite);
-      sprite->size = SpriteSize;
-      memset(sprite->name, 0, sizeof(sprite->name));
-
+      *sprite = (SpriteHeader){
+        .size = SpriteSize, 
+        .name = "",
+        .width = WORD_ALIGN(SFMapTile_Width) / 4 - 1,
+        .height = SFMapTile_Height - 1,
+        .left_bit = 0,
+        .right_bit = SPRITE_RIGHT_BIT(SFMapTile_Width, 8),
+        .image = sizeof(*sprite),
+        .mask = sizeof(*sprite),
+        .type = new_format ? NewSpriteType : OldSpriteType,
+      };
+      
       char numstr[16];
       int nout = sprintf(numstr, "%d", n);
       assert(nout >= 0); /* no formatting error */
@@ -107,16 +117,6 @@ size_t sf_tiles_to_lone_spr(SpriteHeader       *sprite,
         assert(nout >= 0); /* no formatting error */
       }
       DEBUGF("Sprite name is %.*s\n", (int)sizeof(sprite->name), sprite->name);
-
-      *sprite = (SpriteHeader){
-        .width = WORD_ALIGN(SFMapTile_Width) / 4 - 1,
-        .height = SFMapTile_Height - 1,
-        .left_bit = 0,
-        .right_bit = SPRITE_RIGHT_BIT(SFMapTile_Width, 8),
-        .image = sizeof(*sprite),
-        .mask = sizeof(*sprite),
-        .type = new_format ? NewSpriteType : OldSpriteType,
-      };
 
       /* Calculate address of sprite bitmap */
       unsigned char *const sprite_bitmap = (unsigned char *)sprite + sprite->image;
