@@ -31,11 +31,6 @@ target_include_directories(SF3K PUBLIC .)
 
 target_compile_definitions(SF3K PRIVATE
     $<$<CONFIG:Debug>:DEBUG_OUTPUT>
-    $<$<CONFIG:Release>:NDEBUG>
-)
-
-target_compile_options(SF3K PRIVATE
-    $<$<CONFIG:Release>:-O3>
 )
 
 # Header files depend on definitions from this dependency
