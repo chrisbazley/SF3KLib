@@ -32,6 +32,10 @@
                   of the expected name prefix.
   CJB: 14-Mar-26: Use type int instead of unsigned int for bitmap indices.
   CJB: 26-May-26: Use unsigned char instead of char for byte pointers.
+  CJB: 07-Jun-26: Add a defensive check that tiles != NULL when
+                  output_size <= tiles_size (to satisfy clang-tidy) although
+                  that should be impossible because output_size should always
+                  be non-zero and tiles_size should be zero if tiles is NULL.
 */
 
 /* ISO library headers */
@@ -123,7 +127,7 @@ size_t sf_spr_to_tiles(SFMapTileSet           *tiles,
           output_size = req_size;
 
         /* Guard against overrunning the end of the output buffer */
-        if (output_size <= tiles_size)
+        if (output_size <= tiles_size && tiles != NULL)
         {
           /* Increase the record of the number of tiles, if necessary */
           if (tiles->last_tile_num < 0 ||
