@@ -63,6 +63,8 @@ History:
                   names are supported via macro aliases.
   CJB: 26-Jun-10: Made definition of deprecated type and constant names
                   conditional upon definition of CBLIB_OBSOLETE.
+  CJB: 21-Jun-26: Make some integer types signed in the SFColours export
+                  structure definitions.
 */
 #ifndef SFFormats_h
 #define SFFormats_h
@@ -411,9 +413,7 @@ enum
 
 typedef struct
 {
-  int32_t  x_offset;
-  int32_t  y_offset;
-  uint32_t colour;
+  int32_t x_offset, y_offset, colour;
 }
 ExportColoursFileRecord;
 
@@ -421,7 +421,7 @@ typedef struct
 {
   uint32_t                tag;
   uint32_t                version;
-  uint32_t                num_cols;
+  int32_t                 num_cols;
   ExportColoursFileRecord records[];
 }
 ExportColoursFile;
