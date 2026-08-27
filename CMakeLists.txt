@@ -33,6 +33,7 @@ if(USE_FORTIFY)
     )
 
     FetchContent_MakeAvailable(Fortify)
+    link_libraries(Fortify)
 endif()
 
 set(CMAKE_C_STANDARD 99)
@@ -46,7 +47,11 @@ else()
     add_compile_options(-Wall -Wextra -Wsign-conversion -pedantic)
 endif()
 
-if(CMAKE_C_COMPILER_ID MATCHES "Clang|AppleClang")
+if(ENABLE_CLANG_TIDY)
+    if(NOT CMAKE_C_COMPILER_ID MATCHES "Clang|AppleClang")
+        message(FATAL_ERROR "ENABLE_CLANG_TIDY requires Clang")
+    endif()
+
     find_program(CLANG_TIDY_EXE
         NAMES clang-tidy
         HINTS "/opt/homebrew/opt/llvm/bin"
