@@ -36,6 +36,7 @@
   CJB: 14-Mar-26: Use type int instead of unsigned int for bitmap indices.
   CJB: 26-May-26: Use unsigned char instead of char for byte pointers.
                   Explicitly convert size_t to uint32_t.
+  CJB: 21-Sep-26: Declare variables when they are first assigned.
 */
 
 /* ISO library headers */
@@ -146,7 +147,6 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
         /* Guard against overrunning the end of the output buffer */
         if (output_size <= planets_size)
         {
-          const unsigned char *sprite_bitmap;
           unsigned char *image_A, *image_B;
 
           /* Increase the record of the number of images if necessary */
@@ -176,7 +176,7 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
           DEBUGF("Non-aligned bitmap will be written at %p\n", (void *)image_B);
 
           /* Calculate address of start of sprite bitmap */
-          sprite_bitmap = (unsigned char *)sph + sph->image;
+          const unsigned char *sprite_bitmap = (unsigned char *)sph + sph->image;
           DEBUGF("Source bitmap is at %p\n", (void *)sprite_bitmap);
 
           /* We make two copies of the input sprite; one word-aligned and the
