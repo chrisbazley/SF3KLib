@@ -147,8 +147,6 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
         /* Guard against overrunning the end of the output buffer */
         if (output_size <= planets_size)
         {
-          unsigned char *image_A, *image_B;
-
           /* Increase the record of the number of images if necessary */
           if (planets->last_image_num < 0 ||
               image_num > (unsigned long)planets->last_image_num)
@@ -165,14 +163,16 @@ size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
           planets->data_offsets[image_num].image_A = (uint32_t)mem_used;
           assert(mem_used <= SIZE_MAX - sizeof(SFPlanetBitmap));
           mem_used += sizeof(SFPlanetBitmap);
-          image_A = (unsigned char *)planets + planets->data_offsets[image_num].image_A;
+          unsigned char *image_A = (unsigned char *)planets +
+                                   planets->data_offsets[image_num].image_A;
           DEBUGF("Aligned bitmap will be written at %p\n", (void *)image_A);
 
           assert((uint32_t)mem_used == mem_used);
           planets->data_offsets[image_num].image_B = (uint32_t)mem_used;
           assert(mem_used <= SIZE_MAX - sizeof(SFPlanetBitmap));
           mem_used += sizeof(SFPlanetBitmap);
-          image_B = (unsigned char *)planets + planets->data_offsets[image_num].image_B;
+          unsigned char *image_B = (unsigned char *)planets +
+                                   planets->data_offsets[image_num].image_B;
           DEBUGF("Non-aligned bitmap will be written at %p\n", (void *)image_B);
 
           /* Calculate address of start of sprite bitmap */
