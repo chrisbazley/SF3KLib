@@ -24,6 +24,7 @@
   CJB: 18-Apr-16: Cast pointer parameters to void * to match %p.
                   Used size_t for loop counter to match type of ARRAY_SIZE.
   CJB: 11-Nov-18: Fixed broken #include.
+  CJB: 21-Sep-26: Declare variables when they are first assigned.
 */
 
 /* ISO library headers */
@@ -39,13 +40,13 @@
 
 bool sprite_has_8_bpp(const SpriteHeader *sprite)
 {
-  unsigned long type;
   bool has_8_bpp = false;
 
   assert(sprite != NULL);
   DEBUGF("Checking type %u of sprite %p\n", sprite->type, (void *)sprite);
 
-  type = ((long)sprite->type & SPRITE_INFO_TYPE_MASK) >> SPRITE_INFO_TYPE_SHIFT;
+  unsigned long type =
+    ((long)sprite->type & SPRITE_INFO_TYPE_MASK) >> SPRITE_INFO_TYPE_SHIFT;
 
   if (type == SPRITE_TYPE_OLD)
   {
