@@ -20,6 +20,8 @@
 #ifndef SF3KMisc_h
 #define SF3KMisc_h
 
+#include "MacroUtils.h"
+
 #ifdef USE_CBDEBUG
 
 #include "Debug.h"
@@ -36,23 +38,5 @@
 #endif /* DEBUG_OUTPUT */
 
 #endif /* USE_CBDEBUG */
-
-#define NOT_USED(x) ((void)(x))
-
-#define ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))
-
-/* Return the nearest word aligned value greater than or equal to a given
- * expression (useful for sprite widths, which must include right hand wastage).
- */
-#define WORD_ALIGN(value) (((value) + 3) & ~3)
-
-/* Copy a string into a character array of known size, truncating it to fit if
- * necessary. Unlike strncpy(), this macro ensures that the copied string is NUL
- * terminated if it has to be truncated.
- */
-#define STRCPY_SAFE(string_1, string_2) do { \
-  strncpy((string_1), (string_2), sizeof(string_1) - 1); \
-  string_1[sizeof(string_1) - 1]='\0'; \
-} while (0)
 
 #endif /* SF3KMisc_h */
