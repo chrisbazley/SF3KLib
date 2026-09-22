@@ -8,8 +8,9 @@ option(ENABLE_CLANG_TIDY "Run clang-tidy during compilation" OFF)
 include(FetchContent)
 
 FetchContent_Declare(CBOS GIT_REPOSITORY https://github.com/chrisbazley/CBOSLib.git GIT_TAG main)
+FetchContent_Declare(CBUtil GIT_REPOSITORY https://github.com/chrisbazley/CBUtilLib.git GIT_TAG main)
 
-FetchContent_MakeAvailable(CBOS)
+FetchContent_MakeAvailable(CBOS CBUtil)
 
 if(USE_OPTIONAL)
     if(NOT CMAKE_C_COMPILER_ID MATCHES "Clang|AppleClang")
@@ -94,6 +95,10 @@ target_compile_definitions(SF3K PRIVATE
 # Header files depend on definitions from this dependency
 target_link_libraries(SF3K PUBLIC
     CBOS
+)
+
+target_link_libraries(SF3K PRIVATE
+    CBUtil
 )
 
 install(TARGETS SF3K
