@@ -4,6 +4,7 @@ project(SF3KLib C)
 option(USE_OPTIONAL "Enable the _Optional qualifier" OFF)
 option(USE_FORTIFY "Enable Fortify memory-allocation checking" OFF)
 option(ENABLE_CLANG_TIDY "Run clang-tidy during compilation" OFF)
+option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 
 include(FetchContent)
 
@@ -48,7 +49,15 @@ else()
     add_compile_options(-Wall -Wextra -Wsign-conversion -pedantic)
 endif()
 
-if(ENABLE_CLANG_TIDY)
+if(WARNINGS_AS_ERRORS AND CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+    if(MSVC)
+        add_compile_options(/WX)
+    else()
+        add_compile_options(-Werror)
+    endif()
+endif()
+
+if(ENABLE_CLANG_TIDY AND CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
     if(NOT CMAKE_C_COMPILER_ID MATCHES "Clang|AppleClang")
         message(FATAL_ERROR "ENABLE_CLANG_TIDY requires Clang")
     endif()
@@ -58,9 +67,13 @@ if(ENABLE_CLANG_TIDY)
         HINTS "/opt/homebrew/opt/llvm/bin"
     )
 
-    if(CLANG_TIDY_EXE)
+    if(NOT CLANG_TIDY_EXE)
+        message(FATAL_ERROR
+            "ENABLE_CLANG_TIDY is ON, but clang-tidy was not found")
+    endif()
+
         # 1. Base Clang-Tidy call configuration
-        set(CLANG_TIDY_ARGS "${CLANG_TIDY_EXE};-checks=-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.*")
+        set(CLANG_TIDY_ARGS "${CLANG_TIDY_EXE};-checks=-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.*;--warnings-as-errors=clang-analyzer-*")
 
         # 2. On Apple machines, append the current platform SDK directory path
         if(APPLE)
@@ -71,9 +84,6 @@ if(ENABLE_CLANG_TIDY)
         # 3. Apply the modified list to CMake
         set(CMAKE_C_CLANG_TIDY "${CLANG_TIDY_ARGS}")
         message(STATUS "Clang-Tidy Static Analyzer enabled automatically.")
-    else()
-        message(STATUS "clang-tidy binary not found. Skipping analysis pass.")
-    endif()
 endif()
 
 file(GLOB SOURCES "*.c")
