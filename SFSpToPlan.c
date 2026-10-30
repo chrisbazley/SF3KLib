@@ -42,11 +42,9 @@
 /* ISO library headers */
 #include <stdlib.h>
 #include <ctype.h>
-#include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
 #include <stdint.h>
-#include <limits.h>
 
 /* CBOSLib headers */
 #include "SprFormats.h"
