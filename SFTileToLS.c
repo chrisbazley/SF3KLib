@@ -69,7 +69,7 @@ enum
                   WORD_ALIGN(SFMapTile_Width) * SFMapTile_Height
 };
 
-size_t sf_tiles_to_lone_spr(SpriteHeader       *sprite,
+size_t sf_tiles_to_lone_spr(_Optional SpriteHeader *sprite,
                             size_t              sprite_size,
                             const SFMapTileSet *tiles,
                             int                 n,
