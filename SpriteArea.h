@@ -31,6 +31,10 @@ History:
 #ifndef SpriteArea_h
 #define SpriteArea_h
 
+#if !defined(USE_OPTIONAL) && !defined(_Optional)
+#define _Optional
+#endif
+
 /* ISO library headers */
 #include <stddef.h>
 
@@ -42,7 +46,7 @@ extern void spritearea_init(SpriteAreaHeader *sprite_area, size_t size);
     * Initialises the header of a sprite area of a given size, for future use.
     */
 
-extern void *spritearea_alloc_ext(SpriteAreaHeader *sprite_area, size_t size);
+extern _Optional void *spritearea_alloc_ext(SpriteAreaHeader *sprite_area, size_t size);
    /*
     * Allocates space within a sprite area for the specified amount of
     * extension data, the initial value of which is indeterminate. Any sprites
@@ -52,7 +56,7 @@ extern void *spritearea_alloc_ext(SpriteAreaHeader *sprite_area, size_t size);
     *          sprite area, otherwise a pointer to the allocated space.
     */
 
-extern SpriteHeader *spritearea_alloc_spr(SpriteAreaHeader *sprite_area,
+extern _Optional SpriteHeader *spritearea_alloc_spr(SpriteAreaHeader *sprite_area,
                                           size_t            size);
    /*
     * Allocates space within a sprite area for a sprite of the specified size.

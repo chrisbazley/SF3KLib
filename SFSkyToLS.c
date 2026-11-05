@@ -55,7 +55,7 @@ enum
                   WORD_ALIGN(SFSky_Width) * SFSky_Height
 };
 
-size_t sf_sky_to_lone_spr(SpriteHeader *sprite,
+size_t sf_sky_to_lone_spr(_Optional SpriteHeader *sprite,
                           size_t        sprite_size,
                           const SFSky  *sky,
                           const char   *sprite_name,

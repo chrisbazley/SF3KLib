@@ -73,7 +73,7 @@ enum
                   WORD_ALIGN(SFPlanet_Width - 2) * SFPlanet_Height
 };
 
-size_t sf_planets_to_lone_spr(SpriteHeader          *sprite,
+size_t sf_planets_to_lone_spr(_Optional SpriteHeader *sprite,
                               size_t                 sprite_size,
                               const SFPlanetsHeader *planets,
                               int                    n,

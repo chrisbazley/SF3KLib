@@ -56,7 +56,7 @@ size_t sf_sky_to_spr(SpriteAreaHeader *sprite_area,
   if (sprite_area != NULL)
   {
     /* Allocate space for a new sprite in the output sprite area */
-    SpriteHeader * const sph = spritearea_alloc_spr(sprite_area, sprite_size);
+    _Optional SpriteHeader * const sph = spritearea_alloc_spr(sprite_area, sprite_size);
     if (sph == NULL)
     {
       DEBUGF("Ran out of space during conversion\n");

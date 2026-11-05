@@ -40,6 +40,10 @@ History:
 #ifndef SFBitmaps_h
 #define SFBitmaps_h
 
+#if !defined(USE_OPTIONAL) && !defined(_Optional)
+#define _Optional
+#endif
+
 /* ISO library headers */
 #include <stdbool.h>
 #include <stddef.h>
@@ -64,7 +68,7 @@ typedef bool SFBitmapsQueryFn(const void *arg, const char *name);
     * the operation will be aborted; otherwise it will continue.
     */
 
-extern size_t sf_tiles_to_lone_spr(SpriteHeader       */*sprite*/,
+extern size_t sf_tiles_to_lone_spr(_Optional SpriteHeader */*sprite*/,
                                    size_t              /*sprite_size*/,
                                    const SFMapTileSet */*tiles*/,
                                    int                 /*n*/,
@@ -135,7 +139,7 @@ extern size_t sf_spr_to_tiles(SFMapTileSet           */*tiles*/,
     *          been provided.
     */
 
-extern size_t sf_planets_to_lone_spr(SpriteHeader          */*sprite*/,
+extern size_t sf_planets_to_lone_spr(_Optional SpriteHeader */*sprite*/,
                                      size_t                 /*sprite_size*/,
                                      const SFPlanetsHeader */*planets*/,
                                      int                    /*n*/,
@@ -209,7 +213,7 @@ extern size_t sf_spr_to_planets(SFPlanetsHeader        */*planets*/,
     *          output buffer been provided.
     */
 
-extern size_t sf_sky_to_lone_spr(SpriteHeader */*sprite*/,
+extern size_t sf_sky_to_lone_spr(_Optional SpriteHeader */*sprite*/,
                                  size_t        /*sprite_size*/,
                                  const SFSky  */*sky*/,
                                  const char   */*sprite_name*/,

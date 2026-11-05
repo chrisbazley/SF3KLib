@@ -62,9 +62,9 @@ void spritearea_init(SpriteAreaHeader *sprite_area, size_t size)
   };
 }
 
-void *spritearea_alloc_ext(SpriteAreaHeader *sprite_area, size_t size)
+_Optional void *spritearea_alloc_ext(SpriteAreaHeader *sprite_area, size_t size)
 {
-  unsigned char *ext_data = NULL;
+  _Optional unsigned char *ext_data = NULL;
 
   DEBUGF("Allocating %zu bytes of extension data in sprite area %p\n",
         size, (void *)sprite_area);
@@ -89,21 +89,22 @@ void *spritearea_alloc_ext(SpriteAreaHeader *sprite_area, size_t size)
     /* Guard against overrunning the end of the sprite area. */
     if (size <= INT_MAX && area_used + (int)size <= area_size)
     {
-      ext_data = (unsigned char *)sprite_area + area_first;
+      unsigned char *const new_data = (unsigned char *)sprite_area + area_first;
 
       /* If there are any sprites in the sprite area then shift them upward
          to make room for (extra) extension data. */
       if (area_used > area_first)
       {
         DEBUGF("Moving %d bytes of sprite data from %p to %p\n",
-               area_used - area_first, (void *)ext_data,
-               (void *)(ext_data + size));
+               area_used - area_first, (void *)new_data,
+               (void *)(new_data + size));
 
-        memmove(ext_data + size, ext_data, (size_t)(area_used - area_first));
+        memmove(new_data + size, new_data, (size_t)(area_used - area_first));
       }
 
       sprite_area->used = area_used + (int)size;
       sprite_area->first = area_first + (int)size;
+      ext_data = new_data;
 
       assert(sprite_area->size >= sprite_area->used);
       assert(sprite_area->used >= sprite_area->first);
@@ -125,9 +126,9 @@ void *spritearea_alloc_ext(SpriteAreaHeader *sprite_area, size_t size)
   return ext_data;
 }
 
-SpriteHeader *spritearea_alloc_spr(SpriteAreaHeader *sprite_area, size_t size)
+_Optional SpriteHeader *spritearea_alloc_spr(SpriteAreaHeader *sprite_area, size_t size)
 {
-  SpriteHeader *sph = NULL;
+  _Optional SpriteHeader *sph = NULL;
 
   DEBUGF("Allocating %zu bytes for a new sprite in area %p\n",
         size, (void *)sprite_area);
@@ -151,10 +152,12 @@ SpriteHeader *spritearea_alloc_spr(SpriteAreaHeader *sprite_area, size_t size)
     if (size <= INT_MAX && area_used + (int)size <= area_size)
     {
       /* Calculate address of the free space within the sprite area */
-      sph = (SpriteHeader *)((unsigned char *)sprite_area + area_used);
+      SpriteHeader *const new_sprite =
+        (SpriteHeader *)((unsigned char *)sprite_area + area_used);
 
       /* Only initialise the offset to the next sprite */
-      sph->size = (int)size;
+      new_sprite->size = (int)size;
+      sph = new_sprite;
 
       sprite_area->sprite_count++;
       sprite_area->used = area_used + (int)size;
