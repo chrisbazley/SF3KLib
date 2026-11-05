@@ -35,8 +35,8 @@
 #include "SprFormats.h"
 
 /* Local headers */
-#include "Internal/SF3KMisc.h"
 #include "Internal/SprHas8bpp.h"
+#include "Internal/SF3KMisc.h"
 
 bool sprite_has_8_bpp(const SpriteHeader *sprite)
 {

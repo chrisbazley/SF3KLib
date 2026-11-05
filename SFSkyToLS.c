@@ -40,9 +40,9 @@
 #include "SprFormats.h"
 
 /* Local headers */
-#include "Internal/SF3KMisc.h"
 #include "SFFormats.h"
 #include "SFSprConv.h"
+#include "Internal/SF3KMisc.h"
 
 enum
 {

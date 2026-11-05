@@ -44,8 +44,8 @@
 #include "SprFormats.h"
 
 /* Local headers */
-#include "Internal/SF3KMisc.h"
 #include "SpriteArea.h"
+#include "Internal/SF3KMisc.h"
 
 void spritearea_init(SpriteAreaHeader *sprite_area, size_t size)
 {
