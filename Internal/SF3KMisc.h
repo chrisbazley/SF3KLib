@@ -39,4 +39,8 @@
 
 #endif /* USE_CBDEBUG */
 
+#ifdef USE_OPTIONAL
+#include "Optional.h"
+#endif
+
 #endif /* SF3KMisc_h */

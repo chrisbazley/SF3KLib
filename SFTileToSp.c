@@ -42,10 +42,10 @@
 #include "SprFormats.h"
 
 /* Local headers */
-#include "Internal/SF3KMisc.h"
 #include "SFFormats.h"
 #include "SpriteArea.h"
 #include "SFSprConv.h"
+#include "Internal/SF3KMisc.h"
 
 size_t sf_tiles_to_spr(SpriteAreaHeader    *sprite_area,
                        const SFMapTileSet  *tiles,

@@ -50,10 +50,10 @@
 #include "SprFormats.h"
 
 /* Local headers */
-#include "Internal/SF3KMisc.h"
 #include "Internal/SprHas8bpp.h"
 #include "SFFormats.h"
 #include "SFSprConv.h"
+#include "Internal/SF3KMisc.h"
 
 size_t sf_spr_to_planets(SFPlanetsHeader        *planets,
                          size_t                  planets_size,
